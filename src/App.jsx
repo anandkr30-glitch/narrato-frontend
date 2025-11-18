@@ -1064,50 +1064,7 @@ const App = () => {
   }, [db]);
 
   // ---- THE FIX: single-call generation & robust parsing ----
-  const handleGenerateSummary = useCallback(async () => {
-  try {
-    const { title, textToSummarize } = uploadState;
-
-    setError(null);
-    setSummaryData(null);
-
-    if (!textToSummarize || textToSummarize.length < 10) {
-      setError("Please provide enough text to summarize.");
-      return;
-    }
-
-    setIsLoading(true);
-    console.log("Calling /api/generate...");
-
-    const response = await fetch(`${API_URL}/generate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        text: textToSummarize,
-        title: title || "Untitled",
-        style: "Comprehensive (Max Length)"
-      })
-    });
-
-    const data = await response.json();
-    console.log("Generate API Response:", data);
-
-    if (!response.ok) {
-      throw new Error(data.error || "Summary generation failed");
-    }
-
-    // Save the summary result
-    setSummaryData(data);
-
-  } catch (err) {
-    console.error("Frontend Summary Error:", err);
-    setError("Error: " + err.message);
-  } finally {
-    setIsLoading(false);
-  }
-}, [uploadState, API_URL]);
+  
 
       // parse structured output robustly
     const handleGenerateSummary = useCallback(async () => {
