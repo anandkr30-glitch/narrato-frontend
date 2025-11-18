@@ -1077,16 +1077,16 @@ const App = () => {
 
     try {
       console.log("Calling /api/generate...");
-      const generateResponse = await fetch(`${API_URL}/generate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: textToSummarize,
-          title: title,
-          style: style,
-          type: type
-        })
-      });
+      const response = await fetch(`${API_URL}/generate`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    text: textToSummarize,
+    title,
+    style: "Comprehensive (Max Length)"
+  })
+});
+
 
       if (!generateResponse.ok) {
         // try to parse JSON error if possible
