@@ -5,7 +5,7 @@ import { BookOpen, Zap, Clock, TrendingUp, Upload, Type, BarChart3, Users, FileT
 // --- API & FIREBASE CONFIGURATION ---
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-const API_URL = `${BASE_URL}/api/generate`;
+const API_URL = `${BASE_URL}/api`;
 const TTS_URL = `${BASE_URL}/api/tts`;
 
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
