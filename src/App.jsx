@@ -1110,43 +1110,50 @@ const App = () => {
 }, [uploadState, API_URL]);
 
       // parse structured output robustly
-      const data = await safeParseJsonResponse(generateResponse);
+    const handleGenerateSummary = useCallback(async () => {
+  try {
+    const { title, textToSummarize } = uploadState;
 
-      // accept either the full object or nested forms
-      // prefer properties directly on returned object
-      const returned = data || {};
-      // some backends returned { title, summary, themes, ... } directly
-      // others might wrap: { result: {...} } — handle both
-      const payload = returned.result && typeof returned.result === 'object' ? returned.result : returned;
+    setError(null);
+    setSummaryData(null);
 
-      // Ensure required fields exist; fill safe defaults
-      const finalSummary = {
-        title: payload.title || title || 'Untitled',
-        summary: payload.summary || (typeof payload === 'string' ? payload : '') || 'Summary not provided.',
-        translatedSummary: payload.translatedSummary || null,
-        confidence: typeof payload.confidence === 'number' ? payload.confidence : 0.9,
-        themes: Array.isArray(payload.themes) ? payload.themes : (Array.isArray(payload.topics) ? payload.topics : []),
-        characters: Array.isArray(payload.characters) ? payload.characters : [],
-        sentimentScores: Array.isArray(payload.sentimentScores) && payload.sentimentScores.length === 5 ? payload.sentimentScores : [0.5,0.5,0.5,0.5,0.5],
-        wordCount: payload.wordCount || { original: textToSummarize.split(/\s+/).length, summary: (payload.summary || '').split(/\s+/).length },
-        originalText: payload.originalText || textToSummarize,
-        type: type || uploadState.type,
-        style: style || uploadState.style,
-        readingTimeSaved: payload.readingTimeSaved || null
-      };
-
-      // Save to Firestore if available
-      const saved = await saveSummaryToFirestore(finalSummary);
-      setSummaryData(saved);
-      navigate('summary');
-
-    } catch (err) {
-      console.error("Frontend Summary Error:", err);
-      setError(`Failed to get summary: ${err.message}`);
-    } finally {
-      setIsLoading(false);
+    if (!textToSummarize || textToSummarize.length < 10) {
+      setError("Please provide enough text to summarize.");
+      return;
     }
-  }, [uploadState, navigate, saveSummaryToFirestore]);
+
+    setIsLoading(true);
+    console.log("Calling /api/generate...");
+
+    const response = await fetch(`${API_URL}/generate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        text: textToSummarize,
+        title: title || "Untitled",
+        style: "Comprehensive (Max Length)"
+      })
+    });
+
+    const data = await response.json();
+    console.log("Generate API Response:", data);
+
+    if (!response.ok) {
+      throw new Error(data.error || "Summary generation failed");
+    }
+
+    setSummaryData(data);
+
+  } catch (err) {
+    console.error("Frontend Summary Error:", err);
+    setError("Error: " + err.message);
+  } finally {
+    setIsLoading(false);
+  }
+}, [uploadState, API_URL]);
+
 
   // UI theme variables
   const primaryColor = '#4f46e5';
