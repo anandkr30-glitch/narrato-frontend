@@ -1,0 +1,1 @@
+export default function ResearchPage(){ return <div>Research Tools (placeholder)</div> }

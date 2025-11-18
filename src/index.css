@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* small safe defaults */
+html,body,#root{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
