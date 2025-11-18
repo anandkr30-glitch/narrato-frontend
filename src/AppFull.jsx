@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useCallback, useMemo, createContext, useContext } from 'react';
 import { BookOpen, Zap, Clock, TrendingUp, Upload, Type, BarChart3, Users, FileText, Moon, Sun, Download, Share2, Search, CornerDownRight, MessageSquare, Edit3, Loader, CheckCircle, BookOpenCheck, Volume2, Globe, Save, X } from 'lucide-react';
 
+
 // --- API & FIREBASE CONFIGURATION ---
-const apiKey = ""; // Leave as-is for Canvas environment
-const API_URL = "http://localhost:4000/api/generate";
-const TTS_URL = "http://localhost:4000/api/tts"; // Added TTS_URL from your code
+const BASE_URL = import.meta.env.VITE_API_URL; 
+// Example: https://narrato-backend.onrender.com
+
+const API_URL = `${BASE_URL}/api`;
+const TTS_URL = `${BASE_URL}/api/tts`;
+
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+
 
 // --- GLOBAL REACT CONTEXT ---
 // This context will hold all our global state and functions
