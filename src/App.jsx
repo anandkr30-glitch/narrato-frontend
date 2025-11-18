@@ -3,8 +3,11 @@ import React, { useState, useEffect, useCallback, useMemo, createContext, useCon
 import { BookOpen, Zap, Clock, TrendingUp, Upload, Type, BarChart3, Users, FileText, Moon, Sun, Download, Share2, Search, CornerDownRight, MessageSquare, Edit3, Loader, CheckCircle, BookOpenCheck, Globe, Save, X, Trash2, Volume2 } from 'lucide-react';
 
 // --- API & FIREBASE CONFIGURATION ---
-const API_URL = "http://localhost:4000/api";
-const TTS_URL = `${API_URL}/tts`;
+const BASE_URL = import.meta.env.VITE_API_URL;
+
+const API_URL = `${BASE_URL}/api/generate`;
+const TTS_URL = `${BASE_URL}/api/tts`;
+
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
 
