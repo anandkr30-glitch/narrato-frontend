@@ -1065,7 +1065,9 @@ const App = () => {
 
   // ---- THE FIX: single-call generation & robust parsing ----
   const handleGenerateSummary = useCallback(async () => {
-    const { title, textToSummarize, type, style } = uploadState;
+  try {
+    const { title, textToSummarize } = uploadState;
+
     setError(null);
     setSummaryData(null);
 
@@ -1073,30 +1075,39 @@ const App = () => {
       setError("Please provide enough text to summarize.");
       return;
     }
+
     setIsLoading(true);
+    console.log("Calling /api/generate...");
 
-    try {
-      console.log("Calling /api/generate...");
-      const response = await fetch(`${API_URL}/generate`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    text: textToSummarize,
-    title,
-    style: "Comprehensive (Max Length)"
-  })
-});
+    const response = await fetch(`${API_URL}/generate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        text: textToSummarize,
+        title: title || "Untitled",
+        style: "Comprehensive (Max Length)"
+      })
+    });
 
+    const data = await response.json();
+    console.log("Generate API Response:", data);
 
-      if (!generateResponse.ok) {
-        // try to parse JSON error if possible
-        try {
-          const err = await safeParseJsonResponse(generateResponse);
-          throw new Error(err.error || JSON.stringify(err));
-        } catch (parseErr) {
-          throw new Error(`Summary generation failed: ${generateResponse.status} ${generateResponse.statusText}`);
-        }
-      }
+    if (!response.ok) {
+      throw new Error(data.error || "Summary generation failed");
+    }
+
+    // Save the summary result
+    setSummaryData(data);
+
+  } catch (err) {
+    console.error("Frontend Summary Error:", err);
+    setError("Error: " + err.message);
+  } finally {
+    setIsLoading(false);
+  }
+}, [uploadState, API_URL]);
 
       // parse structured output robustly
       const data = await safeParseJsonResponse(generateResponse);
